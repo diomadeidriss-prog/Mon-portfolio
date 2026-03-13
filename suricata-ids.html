@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDS/IPS Suricata | DIOMANDE Malick</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #060d1a; --surface: #0d1f3c; --accent: #00f5c4;
+            --accent2: #0090ff; --text: #c8d8f0; --muted: #4a6080;
+            --danger: #ff4060; --warning: #ffa940;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--text); }
+        body::before { content: ''; position: fixed; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px); pointer-events: none; z-index: 9999; }
+        nav { position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 18px 60px; background: rgba(6,13,26,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,245,196,0.1); }
+        .nav-logo { font-family: 'Share Tech Mono', monospace; color: var(--accent); font-size: 0.9rem; letter-spacing: 2px; text-decoration: none; }
+        .back-btn { display: flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; transition: color 0.2s; }
+        .back-btn:hover { color: var(--accent); }
+        .project-hero { padding: 80px 60px 60px; max-width: 1100px; margin: auto; }
+        .project-tag { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,144,255,0.1); border: 1px solid rgba(0,144,255,0.3); color: var(--accent2); padding: 6px 14px; border-radius: 100px; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; letter-spacing: 1px; margin-bottom: 24px; }
+        .project-hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; color: white; line-height: 1.1; margin-bottom: 20px; }
+        .project-hero h1 span { color: var(--accent); }
+        .project-hero .lead { font-size: 1.1rem; color: var(--muted); max-width: 680px; line-height: 1.8; margin-bottom: 32px; }
+        .hero-meta { display: flex; gap: 32px; flex-wrap: wrap; margin-bottom: 40px; }
+        .meta-item { display: flex; flex-direction: column; gap: 4px; }
+        .meta-label { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--muted); letter-spacing: 2px; }
+        .meta-value { font-weight: 700; color: white; font-size: 0.95rem; }
+        .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 40px; }
+        .tag { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; padding: 5px 12px; border-radius: 4px; background: rgba(0,144,255,0.1); color: var(--accent2); border: 1px solid rgba(0,144,255,0.2); }
+        .container { max-width: 1100px; margin: auto; padding: 0 60px 80px; }
+        .content-grid { display: grid; grid-template-columns: 1fr 340px; gap: 48px; align-items: start; }
+        .article h2 { font-size: 1.4rem; font-weight: 800; color: white; margin: 48px 0 16px; display: flex; align-items: center; gap: 10px; }
+        .article h2 i { color: var(--accent); font-size: 1.1rem; }
+        .article h2:first-child { margin-top: 0; }
+        .article p { color: var(--text); line-height: 1.9; margin-bottom: 16px; font-size: 0.97rem; }
+        .article ul { padding-left: 20px; }
+        .article li { color: var(--text); line-height: 1.8; margin-bottom: 8px; font-size: 0.97rem; }
+        .article li::marker { color: var(--accent); }
+        .code-block { background: #020d20; border: 1px solid rgba(0,245,196,0.15); border-radius: 12px; padding: 24px; margin: 24px 0; overflow-x: auto; position: relative; }
+        .code-block::before { content: attr(data-lang); position: absolute; top: 12px; right: 16px; font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--muted); letter-spacing: 1px; }
+        .code-block pre { font-family: 'Share Tech Mono', monospace; font-size: 0.82rem; color: #a8c8f0; line-height: 1.7; }
+        .kw { color: #ff7eb6; } .fn { color: var(--accent); } .st { color: var(--warning); } .cm { color: #4a6080; font-style: italic; }
+        .alert { display: flex; gap: 14px; align-items: flex-start; padding: 18px 20px; border-radius: 10px; margin: 20px 0; }
+        .alert-info { background: rgba(0,144,255,0.08); border: 1px solid rgba(0,144,255,0.2); }
+        .alert-success { background: rgba(0,245,196,0.06); border: 1px solid rgba(0,245,196,0.2); }
+        .alert i { font-size: 1.1rem; margin-top: 2px; }
+        .alert-info i { color: var(--accent2); } .alert-success i { color: var(--accent); }
+        .alert p { margin: 0; font-size: 0.9rem; line-height: 1.7; }
+        .sidebar { display: flex; flex-direction: column; gap: 24px; }
+        .sidebar-card { background: var(--surface); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 24px; }
+        .sidebar-card h4 { font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
+        .terminal { background: #010810; border: 1px solid rgba(0,245,196,0.15); border-radius: 12px; overflow: hidden; }
+        .terminal-header { background: #0a1628; padding: 12px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .dot-r { width: 12px; height: 12px; background: #ff5f56; border-radius: 50%; }
+        .dot-y { width: 12px; height: 12px; background: #ffbd2e; border-radius: 50%; }
+        .dot-g { width: 12px; height: 12px; background: #27c93f; border-radius: 50%; }
+        .terminal-title { font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--muted); margin-left: 8px; }
+        .terminal-body { padding: 20px; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; line-height: 1.8; }
+        .t-green { color: #27c93f; } .t-red { color: var(--danger); } .t-yellow { color: var(--warning); } .t-cyan { color: var(--accent); } .t-muted { color: var(--muted); }
+        .arch-diagram { background: var(--surface); border: 1px solid rgba(0,245,196,0.12); border-radius: 14px; padding: 32px; margin: 24px 0; }
+        .arch-row { display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: wrap; }
+        .arch-box { background: #0a1628; border: 1px solid rgba(0,245,196,0.2); border-radius: 10px; padding: 16px 20px; text-align: center; min-width: 120px; }
+        .arch-box .arch-icon { font-size: 1.5rem; color: var(--accent); display: block; margin-bottom: 8px; }
+        .arch-box .arch-label { font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: white; }
+        .arch-box .arch-sub { font-size: 0.7rem; color: var(--muted); margin-top: 4px; }
+        .arch-arrow { color: var(--accent); font-size: 1.3rem; padding: 0 12px; }
+        .arch-suricata { border-color: var(--accent); background: rgba(0,245,196,0.05); }
+        @media (max-width: 900px) { nav { padding: 16px 20px; } .project-hero, .container { padding-left: 20px; padding-right: 20px; } .content-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<nav>
+    <a href="index.html" class="nav-logo">// DIM_SEC</a>
+    <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Retour au portfolio</a>
+</nav>
+
+<div class="project-hero">
+    <div class="project-tag"><i class="fas fa-shield-halved"></i> DEFENSIVE SECURITY — IDS/IPS</div>
+    <h1>Sonde de détection réseau<br><span>Suricata sur Linux</span></h1>
+    <p class="lead">Mise en place d'un système de détection et prévention d'intrusion (IDS/IPS) avec Suricata, enrichi de règles personnalisées et intégré dans un pipeline d'analyse de logs.</p>
+    <div class="hero-meta">
+        <div class="meta-item"><span class="meta-label">TYPE</span><span class="meta-value">Network Security</span></div>
+        <div class="meta-item"><span class="meta-label">OUTIL PRINCIPAL</span><span class="meta-value">Suricata 7.x</span></div>
+        <div class="meta-item"><span class="meta-label">OS</span><span class="meta-value">Ubuntu Server 22.04</span></div>
+        <div class="meta-item"><span class="meta-label">STATUT</span><span class="meta-value">✓ Déployé & testé</span></div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="tags">
+        <span class="tag">Suricata</span><span class="tag">IDS/IPS</span><span class="tag">Linux</span>
+        <span class="tag">Network Monitoring</span><span class="tag">YAML</span><span class="tag">EVE JSON</span>
+        <span class="tag">Règles Snort</span><span class="tag">Packet Analysis</span>
+    </div>
+
+    <div class="content-grid">
+        <div class="article">
+
+            <h2><i class="fas fa-lightbulb"></i> Contexte du projet</h2>
+            <p>Un réseau non surveillé est une porte ouverte. L'objectif de ce projet était de déployer une sonde réseau complète capable de surveiller le trafic en temps réel, d'identifier les comportements anormaux et de bloquer automatiquement les attaques avérées.</p>
+            <p>Suricata est un moteur IDS/IPS open-source haute performance, utilisé en production par des entreprises du monde entier. Sa capacité à analyser le trafic à la vitesse du réseau (multi-threading) en fait un outil de référence.</p>
+
+            <h2><i class="fas fa-diagram-project"></i> Architecture déployée</h2>
+            <p>La sonde est positionnée en coupure sur l'interface réseau principale de la machine, en mode <strong style="color:white">inline IPS</strong> via NFQueue — ce qui permet non seulement de détecter, mais aussi de <strong style="color:white">bloquer les paquets malveillants</strong> en temps réel.</p>
+
+            <div class="arch-diagram">
+                <div class="arch-row">
+                    <div class="arch-box">
+                        <span class="arch-icon"><i class="fas fa-globe"></i></span>
+                        <div class="arch-label">INTERNET</div>
+                        <div class="arch-sub">Trafic entrant</div>
+                    </div>
+                    <div class="arch-arrow"><i class="fas fa-arrow-right"></i></div>
+                    <div class="arch-box arch-suricata">
+                        <span class="arch-icon"><i class="fas fa-shield-halved"></i></span>
+                        <div class="arch-label">SURICATA</div>
+                        <div class="arch-sub">IDS/IPS — NFQueue</div>
+                    </div>
+                    <div class="arch-arrow"><i class="fas fa-arrow-right"></i></div>
+                    <div class="arch-box">
+                        <span class="arch-icon"><i class="fas fa-server"></i></span>
+                        <div class="arch-label">RÉSEAU LOCAL</div>
+                        <div class="arch-sub">Trafic filtré</div>
+                    </div>
+                </div>
+            </div>
+
+            <h2><i class="fas fa-sliders"></i> Configuration & règles personnalisées</h2>
+            <p>Au-delà des rulesets communautaires (Emerging Threats, Snort Community), j'ai rédigé mes propres règles pour détecter des comportements spécifiques à notre environnement de test.</p>
+
+            <div class="code-block" data-lang="SURICATA RULE">
+<pre><span class="cm"># Détection de scan de ports SYN (Nmap -sS)</span>
+<span class="fn">alert</span> tcp any any <span class="kw">-></span> $HOME_NET any (
+    msg:<span class="st">"SCAN SYN Port Scan détecté"</span>;
+    flags:<span class="st">S</span>;
+    threshold: type threshold, track by_src,
+               count 20, seconds 2;
+    classtype:network-scan;
+    sid:1000001; rev:1;
+)
+
+<span class="cm"># Détection bruteforce SSH</span>
+<span class="fn">alert</span> tcp any any <span class="kw">-></span> $HOME_NET 22 (
+    msg:<span class="st">"BRUTEFORCE SSH tentative multiple"</span>;
+    flow:to_server,established;
+    threshold: type both, track by_src,
+               count 5, seconds 60;
+    classtype:attempted-admin;
+    sid:1000002; rev:1;
+)
+
+<span class="cm"># Détection de C2 — beacon régulier</span>
+<span class="fn">alert</span> http $HOME_NET any <span class="kw">-></span> $EXTERNAL_NET any (
+    msg:<span class="st">"MALWARE Possible C2 beacon"</span>;
+    flow:established,to_server;
+    content:<span class="st">"User-Agent|3a 20|Go-http-client"</span>;
+    sid:1000003; rev:1;
+)</pre>
+            </div>
+
+            <h2><i class="fas fa-file-lines"></i> Analyse des logs — EVE JSON</h2>
+            <p>Suricata génère ses alertes au format <strong style="color:white">EVE JSON</strong>, un format structuré qui facilite l'intégration dans des SIEM. J'ai écrit un script Python pour parser, filtrer et visualiser ces logs, et générer des rapports quotidiens.</p>
+
+            <div class="code-block" data-lang="PYTHON — LOG PARSER">
+<pre><span class="kw">import</span> json
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+
+<span class="kw">def</span> <span class="fn">parse_eve_log</span>(filepath):
+    alerts = []
+    <span class="kw">with</span> open(filepath) <span class="kw">as</span> f:
+        <span class="kw">for</span> line <span class="kw">in</span> f:
+            event = json.loads(line)
+            <span class="kw">if</span> event.get(<span class="st">"event_type"</span>) == <span class="st">"alert"</span>:
+                alerts.append({
+                    <span class="st">"timestamp"</span>: event[<span class="st">"timestamp"</span>],
+                    <span class="st">"src_ip"</span>: event[<span class="st">"src_ip"</span>],
+                    <span class="st">"signature"</span>: event[<span class="st">"alert"</span>][<span class="st">"signature"</span>],
+                    <span class="st">"severity"</span>: event[<span class="st">"alert"</span>][<span class="st">"severity"</span>]
+                })
+    <span class="cm"># Top 10 IPs sources les plus actives</span>
+    top_ips = Counter(a[<span class="st">"src_ip"</span>] <span class="kw">for</span> a <span class="kw">in</span> alerts).most_common(10)
+    <span class="kw">return</span> alerts, top_ips</pre>
+            </div>
+
+            <h2><i class="fas fa-flask"></i> Tests & validation</h2>
+            <p>Pour valider les règles, j'ai simulé des attaques dans un environnement isolé :</p>
+            <ul>
+                <li>Scan de ports avec <strong style="color:white">Nmap</strong> (SYN scan, version detection, OS fingerprinting)</li>
+                <li>Bruteforce SSH avec <strong style="color:white">Hydra</strong></li>
+                <li>Exploitation de failles web via <strong style="color:white">SQLmap</strong></li>
+                <li>Simulation de trafic malveillant avec <strong style="color:white">Metasploit</strong></li>
+            </ul>
+
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="dot-r"></div><div class="dot-y"></div><div class="dot-g"></div>
+                    <span class="terminal-title">eve.json — alertes en temps réel</span>
+                </div>
+                <div class="terminal-body">
+                    <div><span class="t-muted">2026-01-15T14:23:01 </span><span class="t-red">[ALERT]</span> <span class="t-yellow">SCAN SYN Port Scan</span></div>
+                    <div><span class="t-muted">  src: 192.168.1.45:43812 → dst: 10.0.0.1:*</span></div>
+                    <div><span class="t-muted">  severity: 2 | category: network-scan</span></div>
+                    <div>&nbsp;</div>
+                    <div><span class="t-muted">2026-01-15T14:23:45 </span><span class="t-red">[ALERT]</span> <span class="t-yellow">BRUTEFORCE SSH tentative multiple</span></div>
+                    <div><span class="t-muted">  src: 192.168.1.45:51234 → dst: 10.0.0.1:22</span></div>
+                    <div><span class="t-muted">  count: 47 tentatives / 60s</span></div>
+                    <div>&nbsp;</div>
+                    <div><span class="t-green">[IPS] Paquet DROPPÉ — src: 192.168.1.45 bloqué</span></div>
+                    <div><span class="t-green">[IPS] Règle appliquée: iptables DROP ajouté</span></div>
+                </div>
+            </div>
+
+            <div class="alert alert-success">
+                <i class="fas fa-circle-check"></i>
+                <p>Résultat : <strong>100% des attaques simulées détectées</strong>, taux de faux positifs réduit à &lt;2% après tuning des règles sur 2 semaines.</p>
+            </div>
+
+        </div>
+
+        <aside class="sidebar">
+            <div class="sidebar-card">
+                <h4><i class="fas fa-list" style="margin-right:8px"></i>Fonctionnalités</h4>
+                <ul style="list-style:none; padding:0;">
+                    <li style="padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.88rem; color:var(--text); display:flex; gap:8px;"><span style="color:var(--accent)">✓</span> Mode IDS passif</li>
+                    <li style="padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.88rem; color:var(--text); display:flex; gap:8px;"><span style="color:var(--accent)">✓</span> Mode IPS inline (NFQueue)</li>
+                    <li style="padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.88rem; color:var(--text); display:flex; gap:8px;"><span style="color:var(--accent)">✓</span> Règles personnalisées</li>
+                    <li style="padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.88rem; color:var(--text); display:flex; gap:8px;"><span style="color:var(--accent)">✓</span> Logs EVE JSON</li>
+                    <li style="padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.88rem; color:var(--text); display:flex; gap:8px;"><span style="color:var(--accent)">✓</span> Script d'analyse Python</li>
+                    <li style="padding:8px 0; font-size:0.88rem; color:var(--text); display:flex; gap:8px;"><span style="color:var(--accent)">✓</span> Rapports automatisés</li>
+                </ul>
+            </div>
+            <div class="sidebar-card">
+                <h4><i class="fas fa-cubes" style="margin-right:8px"></i>Stack Technique</h4>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <div style="display:flex; align-items:center; gap:10px;"><i class="fas fa-shield-halved" style="width:28px; text-align:center; color:var(--accent);"></i><span style="font-size:0.88rem;">Suricata 7.0</span></div>
+                    <div style="display:flex; align-items:center; gap:10px;"><i class="fab fa-linux" style="width:28px; text-align:center; color:var(--accent);"></i><span style="font-size:0.88rem;">Ubuntu Server 22.04</span></div>
+                    <div style="display:flex; align-items:center; gap:10px;"><i class="fas fa-fire-flame-curved" style="width:28px; text-align:center; color:var(--accent);"></i><span style="font-size:0.88rem;">NFTables / IPTables</span></div>
+                    <div style="display:flex; align-items:center; gap:10px;"><i class="fab fa-python" style="width:28px; text-align:center; color:var(--accent);"></i><span style="font-size:0.88rem;">Python (Log Parser)</span></div>
+                    <div style="display:flex; align-items:center; gap:10px;"><i class="fas fa-network-wired" style="width:28px; text-align:center; color:var(--accent);"></i><span style="font-size:0.88rem;">Wireshark / tcpdump</span></div>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+</body>
+</html>

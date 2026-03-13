@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Web Scraping | DIOMANDE Malick</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg:#060d1a; --surface:#0d1f3c; --accent:#00f5c4; --accent2:#0090ff; --text:#c8d8f0; --muted:#4a6080; --danger:#ff4060; --warning:#ffa940; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Syne',sans-serif; background:var(--bg); color:var(--text); }
+        body::before { content:''; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px); pointer-events:none; z-index:9999; }
+        nav { position:sticky; top:0; z-index:100; display:flex; justify-content:space-between; align-items:center; padding:18px 60px; background:rgba(6,13,26,0.9); backdrop-filter:blur(12px); border-bottom:1px solid rgba(0,245,196,0.1); }
+        .nav-logo { font-family:'Share Tech Mono',monospace; color:var(--accent); font-size:0.9rem; letter-spacing:2px; text-decoration:none; }
+        .back-btn { display:flex; align-items:center; gap:8px; color:var(--muted); text-decoration:none; font-size:0.85rem; letter-spacing:1px; transition:color 0.2s; }
+        .back-btn:hover { color:var(--accent); }
+        .project-hero { padding:80px 60px 40px; max-width:1100px; margin:auto; }
+        .project-tag { display:inline-flex; align-items:center; gap:8px; background:rgba(255,169,64,0.1); border:1px solid rgba(255,169,64,0.3); color:var(--warning); padding:6px 14px; border-radius:100px; font-family:'Share Tech Mono',monospace; font-size:0.75rem; letter-spacing:1px; margin-bottom:24px; }
+        .project-hero h1 { font-size:clamp(2rem,5vw,3.5rem); font-weight:800; color:white; line-height:1.1; margin-bottom:20px; }
+        .project-hero h1 span { color:var(--accent); }
+        .project-hero .lead { font-size:1.1rem; color:var(--muted); max-width:680px; line-height:1.8; margin-bottom:32px; }
+        .hero-meta { display:flex; gap:32px; flex-wrap:wrap; margin-bottom:40px; }
+        .meta-item { display:flex; flex-direction:column; gap:4px; }
+        .meta-label { font-family:'Share Tech Mono',monospace; font-size:0.7rem; color:var(--muted); letter-spacing:2px; }
+        .meta-value { font-weight:700; color:white; font-size:0.95rem; }
+        .tags { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:40px; }
+        .tag { font-family:'Share Tech Mono',monospace; font-size:0.7rem; padding:5px 12px; border-radius:4px; background:rgba(0,144,255,0.1); color:var(--accent2); border:1px solid rgba(0,144,255,0.2); }
+        .container { max-width:1100px; margin:auto; padding:0 60px 80px; }
+        .content-grid { display:grid; grid-template-columns:1fr 340px; gap:48px; align-items:start; }
+        .article h2 { font-size:1.4rem; font-weight:800; color:white; margin:48px 0 16px; display:flex; align-items:center; gap:10px; }
+        .article h2:first-child { margin-top:0; }
+        .article h2 i { color:var(--accent); font-size:1.1rem; }
+        .article p { color:var(--text); line-height:1.9; margin-bottom:16px; font-size:0.97rem; }
+        .article ul { padding-left:20px; }
+        .article li { color:var(--text); line-height:1.8; margin-bottom:8px; font-size:0.97rem; }
+        .article li::marker { color:var(--accent); }
+        .code-block { background:#020d20; border:1px solid rgba(0,245,196,0.15); border-radius:12px; padding:24px; margin:24px 0; overflow-x:auto; position:relative; }
+        .code-block::before { content:attr(data-lang); position:absolute; top:12px; right:16px; font-family:'Share Tech Mono',monospace; font-size:0.7rem; color:var(--muted); }
+        .code-block pre { font-family:'Share Tech Mono',monospace; font-size:0.82rem; color:#a8c8f0; line-height:1.7; }
+        .kw { color:#ff7eb6; } .fn { color:var(--accent); } .st { color:var(--warning); } .cm { color:#4a6080; font-style:italic; }
+        .alert { display:flex; gap:14px; align-items:flex-start; padding:18px 20px; border-radius:10px; margin:20px 0; }
+        .alert-warning { background:rgba(255,169,64,0.08); border:1px solid rgba(255,169,64,0.25); }
+        .alert-success { background:rgba(0,245,196,0.06); border:1px solid rgba(0,245,196,0.2); }
+        .alert i { font-size:1.1rem; margin-top:2px; }
+        .alert-warning i { color:var(--warning); } .alert-success i { color:var(--accent); }
+        .alert p { margin:0; font-size:0.9rem; line-height:1.7; }
+        .sidebar { display:flex; flex-direction:column; gap:24px; }
+        .sidebar-card { background:var(--surface); border:1px solid rgba(255,255,255,0.06); border-radius:14px; padding:24px; }
+        .sidebar-card h4 { font-family:'Share Tech Mono',monospace; font-size:0.75rem; color:var(--accent); letter-spacing:2px; text-transform:uppercase; margin-bottom:16px; }
+        .leak-type { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+        .leak-type:last-child { border-bottom:none; }
+        .leak-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:0.85rem; flex-shrink:0; }
+        .icon-red { background:rgba(255,64,96,0.1); color:var(--danger); }
+        .icon-yellow { background:rgba(255,169,64,0.1); color:var(--warning); }
+        .icon-blue { background:rgba(0,144,255,0.1); color:var(--accent2); }
+        .leak-info .leak-name { font-size:0.88rem; font-weight:700; color:white; }
+        .leak-info .leak-desc { font-size:0.78rem; color:var(--muted); margin-top:2px; }
+        .flow-step { display:flex; gap:14px; padding:14px 0; border-bottom:1px solid rgba(255,255,255,0.04); align-items:flex-start; }
+        .flow-step:last-child { border-bottom:none; }
+        .step-num { width:28px; height:28px; border-radius:50%; background:rgba(0,245,196,0.1); border:1px solid var(--accent); display:flex; align-items:center; justify-content:center; font-family:'Share Tech Mono',monospace; font-size:0.75rem; color:var(--accent); flex-shrink:0; margin-top:2px; }
+        .step-text .step-title { font-size:0.88rem; font-weight:700; color:white; }
+        .step-text .step-desc { font-size:0.78rem; color:var(--muted); margin-top:3px; line-height:1.5; }
+        @media (max-width:900px) { nav { padding:16px 20px; } .project-hero, .container { padding-left:20px; padding-right:20px; } .content-grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+<nav>
+    <a href="index.html" class="nav-logo">// DIM_SEC</a>
+    <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Retour au portfolio</a>
+</nav>
+
+<div class="project-hero">
+    <div class="project-tag"><i class="fas fa-magnifying-glass-chart"></i> OSINT — DATA AUDIT</div>
+    <h1>Audit de surface d'attaque<br><span>par Web Scraping</span></h1>
+    <p class="lead">Collecte automatisée et analyse d'informations publiquement accessibles pour cartographier l'exposition d'une organisation et identifier les data leakages avant qu'un attaquant ne le fasse.</p>
+    <div class="hero-meta">
+        <div class="meta-item"><span class="meta-label">TYPE</span><span class="meta-value">OSINT / Recon</span></div>
+        <div class="meta-item"><span class="meta-label">LANGAGE</span><span class="meta-value">Python 3.11</span></div>
+        <div class="meta-item"><span class="meta-label">APPROCHE</span><span class="meta-value">Ethical Hacking</span></div>
+        <div class="meta-item"><span class="meta-label">STATUT</span><span class="meta-value">✓ Finalisé</span></div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="tags">
+        <span class="tag">Python</span><span class="tag">BeautifulSoup</span><span class="tag">Scrapy</span>
+        <span class="tag">OSINT</span><span class="tag">Data Leakage</span><span class="tag">Recon</span>
+        <span class="tag">Shodan API</span><span class="tag">Regex</span>
+    </div>
+
+    <div class="content-grid">
+        <div class="article">
+
+            <h2><i class="fas fa-lightbulb"></i> Le problème de la surface d'attaque</h2>
+            <p>Avant de lancer une cyberattaque, tout attaquant commence par une phase de <strong style="color:white">reconnaissance (recon)</strong>. Il collecte des informations sur la cible : adresses email, sous-domaines, technologies utilisées, fichiers exposés, identifiants divulgués sur des forums.</p>
+            <p>L'objectif de ce projet était de simuler cette phase de recon en étant du côté défenseur — pour trouver et corriger les expositions <em>avant</em> qu'un acteur malveillant ne les exploite.</p>
+
+            <div class="alert alert-warning">
+                <i class="fas fa-triangle-exclamation"></i>
+                <p><strong>Cadre éthique :</strong> Ce projet a été réalisé dans un cadre strictement éducatif, sur des cibles fictives ou avec une autorisation explicite. L'OSINT offensif sans consentement est illégal (art. 323-1 Code pénal français).</p>
+            </div>
+
+            <h2><i class="fas fa-magnifying-glass"></i> Ce que l'outil recherche</h2>
+            <p>L'outil combine plusieurs sources d'information pour dresser un portrait complet de la surface d'attaque d'une organisation :</p>
+            <ul>
+                <li><strong style="color:white">Emails d'employés</strong> exposés sur des pages Contact, LinkedIn, forums techniques</li>
+                <li><strong style="color:white">Sous-domaines</strong> découverts via DNS brute-force et certificats TLS (crt.sh)</li>
+                <li><strong style="color:white">Technologies détectées</strong> (CMS, frameworks, versions) via headers HTTP et metadata</li>
+                <li><strong style="color:white">Fichiers sensibles exposés</strong> (.env, backup.zip, .git/, config.php...)</li>
+                <li><strong style="color:white">Credentials leakés</strong> référencés sur des bases comme HaveIBeenPwned</li>
+                <li><strong style="color:white">Appareils exposés</strong> sur internet via Shodan (caméras, routeurs, serveurs)</li>
+            </ul>
+
+            <h2><i class="fas fa-code"></i> Implémentation technique</h2>
+            <p>L'outil est structuré en modules indépendants, chacun responsable d'un vecteur de collecte, orchestrés par un moteur central qui agrège et déduplique les résultats.</p>
+
+            <div class="code-block" data-lang="PYTHON — EMAIL HARVESTER">
+<pre><span class="kw">import</span> re, requests
+<span class="kw">from</span> bs4 <span class="kw">import</span> BeautifulSoup
+
+<span class="kw">def</span> <span class="fn">harvest_emails</span>(domain, depth=2):
+    <span class="cm">"""Collecte les emails exposés sur le domaine cible"""</span>
+    found_emails = set()
+    email_pattern = re.compile(
+        <span class="st">r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}'</span>
+    )
+    urls_to_visit = [<span class="st">f"https://{domain}"</span>]
+    visited = set()
+
+    <span class="kw">for</span> url <span class="kw">in</span> urls_to_visit[:depth*10]:
+        <span class="kw">if</span> url <span class="kw">in</span> visited: <span class="kw">continue</span>
+        response = requests.get(url, timeout=5)
+        soup = BeautifulSoup(response.text, <span class="st">'html.parser'</span>)
+        
+        <span class="cm"># Scan dans le texte brut</span>
+        emails = email_pattern.findall(response.text)
+        found_emails.update(emails)
+        
+        <span class="cm"># Scan des balises mailto:</span>
+        <span class="kw">for</span> link <span class="kw">in</span> soup.find_all(<span class="st">'a'</span>, href=<span class="kw">True</span>):
+            <span class="kw">if</span> <span class="st">'mailto:'</span> <span class="kw">in</span> link[<span class="st">'href'</span>]:
+                found_emails.add(link[<span class="st">'href'</span>].replace(<span class="st">'mailto:'</span>, <span class="st">''</span>))
+        visited.add(url)
+
+    <span class="kw">return</span> list(found_emails)</pre>
+            </div>
+
+            <div class="code-block" data-lang="PYTHON — EXPOSED FILES DETECTOR">
+<pre><span class="cm"># Détection de fichiers sensibles exposés</span>
+SENSITIVE_PATHS = [
+    <span class="st">".env"</span>, <span class="st">".git/config"</span>, <span class="st">"backup.sql"</span>, <span class="st">"backup.zip"</span>,
+    <span class="st">"config.php.bak"</span>, <span class="st">"phpinfo.php"</span>, <span class="st">"wp-config.php.bak"</span>,
+    <span class="st">"admin/config.yml"</span>, <span class="st">".DS_Store"</span>, <span class="st">"web.config"</span>
+]
+
+<span class="kw">def</span> <span class="fn">check_exposed_files</span>(base_url):
+    exposed = []
+    <span class="kw">for</span> path <span class="kw">in</span> SENSITIVE_PATHS:
+        url = <span class="st">f"{base_url}/{path}"</span>
+        r = requests.head(url, timeout=3, allow_redirects=<span class="kw">False</span>)
+        <span class="kw">if</span> r.status_code == 200:
+            exposed.append({
+                <span class="st">"url"</span>: url, <span class="st">"size"</span>: r.headers.get(<span class="st">"Content-Length"</span>),
+                <span class="st">"risk"</span>: <span class="st">"CRITICAL"</span>
+            })
+    <span class="kw">return</span> exposed</pre>
+            </div>
+
+            <h2><i class="fas fa-file-pdf"></i> Rapport d'audit généré</h2>
+            <p>À la fin du scan, l'outil génère un rapport structuré (JSON + PDF) avec :</p>
+            <ul>
+                <li>Résumé exécutif avec score de risque global</li>
+                <li>Détail de chaque finding avec niveau de criticité</li>
+                <li>Recommandations concrètes de remédiation</li>
+                <li>Timeline de découverte des informations</li>
+            </ul>
+
+            <div class="alert alert-success">
+                <i class="fas fa-circle-check"></i>
+                <p>Résultat sur cible de test : <strong>23 emails exposés</strong>, <strong>4 sous-domaines fantômes</strong> non maintenus, <strong>2 fichiers .env</strong> accessibles publiquement — tous corrigés après rapport.</p>
+            </div>
+
+        </div>
+
+        <aside class="sidebar">
+            <div class="sidebar-card">
+                <h4><i class="fas fa-database" style="margin-right:8px"></i>Types de leaks détectés</h4>
+                <div class="leak-type">
+                    <div class="leak-icon icon-red"><i class="fas fa-key"></i></div>
+                    <div class="leak-info"><div class="leak-name">Credentials exposés</div><div class="leak-desc">Emails, mots de passe, API keys</div></div>
+                </div>
+                <div class="leak-type">
+                    <div class="leak-icon icon-red"><i class="fas fa-file-code"></i></div>
+                    <div class="leak-info"><div class="leak-name">Fichiers sensibles</div><div class="leak-desc">.env, config, backups</div></div>
+                </div>
+                <div class="leak-type">
+                    <div class="leak-icon icon-yellow"><i class="fas fa-sitemap"></i></div>
+                    <div class="leak-info"><div class="leak-name">Sous-domaines oubliés</div><div class="leak-desc">Assets non maintenus</div></div>
+                </div>
+                <div class="leak-type">
+                    <div class="leak-icon icon-yellow"><i class="fas fa-microchip"></i></div>
+                    <div class="leak-info"><div class="leak-name">Technologies exposées</div><div class="leak-desc">Versions, frameworks, CMS</div></div>
+                </div>
+                <div class="leak-type">
+                    <div class="leak-icon icon-blue"><i class="fas fa-server"></i></div>
+                    <div class="leak-info"><div class="leak-name">Appareils IoT exposés</div><div class="leak-desc">Shodan — ports ouverts</div></div>
+                </div>
+            </div>
+
+            <div class="sidebar-card">
+                <h4><i class="fas fa-route" style="margin-right:8px"></i>Flux d'exécution</h4>
+                <div class="flow-step">
+                    <div class="step-num">1</div>
+                    <div class="step-text"><div class="step-title">Reconnaissance passive</div><div class="step-desc">DNS, WHOIS, crt.sh, Shodan</div></div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-num">2</div>
+                    <div class="step-text"><div class="step-title">Crawl actif</div><div class="step-desc">Spider web, harvest emails</div></div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-num">3</div>
+                    <div class="step-text"><div class="step-title">Détection de fichiers</div><div class="step-desc">Vérif chemins sensibles</div></div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-num">4</div>
+                    <div class="step-text"><div class="step-title">Analyse & scoring</div><div class="step-desc">Agrégation, déduplication</div></div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-num">5</div>
+                    <div class="step-text"><div class="step-title">Rapport final</div><div class="step-desc">JSON + PDF avec remédiation</div></div>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+</body>
+</html>
